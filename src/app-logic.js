@@ -5,8 +5,8 @@ function Todo(title, description, dueDate, priority, complete=false) {
         this.title = newTitle;
         this.description = newDesc;
         this.dueDate = newDate;
-        if (newPriority == "High") this.priority = "high";
-        else if (newPriority == "Medium") this.priority = "medium";
+        if (newPriority == "high") this.priority = "high";
+        else if (newPriority == "medium") this.priority = "medium";
         else this.priority = "low";
     }
 

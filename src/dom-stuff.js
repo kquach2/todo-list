@@ -2,6 +2,7 @@ import { differenceInDays, startOfWeek } from "date-fns";
 import edit from './src/edit.png';
 import trash from './src/trash.png';
 import plus from './src/plus.png';
+import checklist from './src/done.png';
 
 const clearContainer = (parent) => {
         while (parent.firstChild) {
@@ -239,13 +240,22 @@ const displayCustomProjectTodos = (project) => {
 }
 
 const displayProjects = () => {
-    const projectContainer = document.querySelector('#projectContainer');
+    const projectContainer = document.querySelector('#projects-list');
     clearContainer(projectContainer);
     if (ProjectManager.projectsArray.length > 1) {
         for (let i=1; i<ProjectManager.projectsArray.length; i++) {
             const projectDiv = document.createElement('div');
-            const projectTitle = document.createElement('p');
+            projectDiv.setAttribute('class', 'custom-project');
             projectDiv.dataset.index = i;
+
+            const checkListIcon = new Image();
+            checkListIcon.src = checklist;
+            projectDiv.appendChild(checkListIcon);
+
+            const projectTitle = document.createElement('p');
+            projectTitle.textContent = ProjectManager.projectsArray[i].title;
+            projectDiv.appendChild(projectTitle)
+
             projectContainer.appendChild(projectDiv);
         }
     } 
