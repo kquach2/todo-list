@@ -1,6 +1,4 @@
-function Todo(title, description, dueDate, priority, complete=false) {
-    const markComplete = () => this.complete = true;
-
+const Todo = (title, description, dueDate, priority) => {
     const updateTodo = (newTitle, newDesc, newDate, newPriority) => {
         this.title = newTitle;
         this.description = newDesc;
@@ -10,7 +8,7 @@ function Todo(title, description, dueDate, priority, complete=false) {
         else this.priority = "low";
     }
 
-    return {title, description, dueDate, priority, complete, markComplete, updateTodo};
+    return {title, description, dueDate, priority, updateTodo};
 }
 
 function Project(title) {
@@ -34,8 +32,8 @@ const ProjectManager = (() => {
         projectsArray.splice(index,1);
     }
 
-    return {projectsArray, title, addProject, deleteProject};
+    return {projectsArray, addProject, deleteProject};
 
 })();
 
-export default {Todo, Project, ProjectManager};
+export {Todo, Project, ProjectManager};

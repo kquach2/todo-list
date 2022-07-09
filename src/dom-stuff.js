@@ -1,8 +1,9 @@
-import { differenceInDays, startOfWeek } from "date-fns";
-import edit from './src/edit.png';
-import trash from './src/trash.png';
-import plus from './src/plus.png';
-import checklist from './src/done.png';
+import { differenceInDays, hoursToMilliseconds, parse, startOfWeek, endOfWeek } from "date-fns";
+import edit from './edit.png';
+import trash from './trash.png';
+import plus from './plus.png';
+import checklist from './done.png';
+import {Project, Todo, ProjectManager} from './app-logic';
 
 const clearContainer = (parent) => {
         while (parent.firstChild) {
@@ -25,29 +26,56 @@ const displayInboxTodos = () => {
         for (let i=0; i<ProjectManager.projectsArray[0].todos.length; i++) {
             const todo = document.createElement('div');
             todo.dataset.todoIndex = i;
+            todo.addEventListener('click', () => {
+                expandTodo(ProjectManager.projectsArray[0].todos[i]);
+            });
+
+            const left = document.createElement('div');
+            left.setAttribute('class','left');
+
             const button = document.createElement('button');
             button.setAttribute('class', 'complete-button');
-            todo.appendChild(button);
-    
+            button.classList.add(ProjectManager.projectsArray[0].todos[i].priority);
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ProjectManager.projectsArray[0].deleteTodo(i);
+                displayInboxTodos();
+            });
+            left.appendChild(button);
+
             const todoTitle = document.createElement('p');
             todoTitle.setAttribute('class', 'todo-title');
             todoTitle.textContent = ProjectManager.projectsArray[0].todos[i].title;
-            todo.appendChild(todoTitle);
-                
+            left.appendChild(todoTitle);
+            todo.appendChild(left);
+
+            const right = document.createElement('div');
+            right.setAttribute('class','right');
             const todoDueDate = document.createElement('p');
             todoDueDate.setAttribute('class', 'todo-duedate');
             todoDueDate.textContent = ProjectManager.projectsArray[0].todos[i].dueDate;
-            todo.appendChild(todoDueDate);
+            right.appendChild(todoDueDate);
     
             const editIcon = new Image();
             editIcon.src = edit;
             editIcon.setAttribute('class', 'edit-icon');
-            todo.appendChild(editIcon);
+            editIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                displayUpdateTaskForm(ProjectManager.projectsArray[0].todos[i]);
+                //displayInboxTodos();
+            });
+            right.appendChild(editIcon);
     
             const deleteIcon = new Image();
             deleteIcon.src = trash;
             deleteIcon.setAttribute('class', 'delete-icon');
-            todo.appendChild(deleteIcon);
+            deleteIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ProjectManager.projectsArray[0].deleteTodo(i);
+                displayInboxTodos();
+            });
+            right.appendChild(deleteIcon);
+            todo.appendChild(right)
     
             todoContainer.appendChild(todo);
         }
@@ -65,6 +93,7 @@ const displayInboxTodos = () => {
 
     const addTaskText = document.createElement('p');
     addTaskText.textContent = 'Add Task';
+    addTaskButton.addEventListener('click', displayNewTaskForm);
     addTaskButton.append(addTaskText);
 
     projectPreview.appendChild(addTaskButton);
@@ -90,30 +119,57 @@ const displayTodayTodos = () => {
                     const todo = document.createElement('div');
                     todo.dataset.todoIndex = j;
                     todo.dataset.projectIndex = i;
+                    todo.addEventListener('click', () => {
+                        expandTodo(ProjectManager.projectsArray[i].todos[j]);
+                    });
+
+                    const left = document.createElement('div');
+                    left.setAttribute('class','left');
+
                     const button = document.createElement('button');
                     button.setAttribute('class', 'complete-button');
-                    todo.appendChild(button);
+                    button.classList.add(ProjectManager.projectsArray[i].todos[j].priority);
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        ProjectManager.projectsArray[i].deleteTodo(j);
+                        displayTodayTodos();
+                    });
+                    left.appendChild(button);
     
                     const todoTitle = document.createElement('p');
                     todoTitle.setAttribute('class', 'todo-title');
                     todoTitle.textContent = ProjectManager.projectsArray[i].todos[j].title + ` (${ProjectManager.projectsArray[i].title})`;
-                    todo.appendChild(todoTitle);
+                    left.appendChild(todoTitle);
+                    todo.appendChild(left);
                 
+                    const right = document.createElement('div');
+                    right.setAttribute('class','right');
                     const todoDueDate = document.createElement('p');
                     todoDueDate.setAttribute('class', 'todo-duedate');
                     todoDueDate.textContent = project.todos[i].dueDate;
-                    todo.appendChild(todoDueDate);
+                    right.appendChild(todoDueDate);
     
                     const editIcon = new Image();
                     editIcon.src = edit;
                     editIcon.setAttribute('class', 'edit-icon');
-                    todo.appendChild(editIcon);
+                    editIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        displayUpdateTaskForm(ProjectManager.projectsArray[i].todos[j]);
+                        //displayTodayTodos();
+                    });
+                    right.appendChild(editIcon);
     
                     const deleteIcon = new Image();
                     deleteIcon.src = trash;
                     deleteIcon.setAttribute('class', 'delete-icon');
-                    todo.appendChild(deleteIcon);
-    
+                    deleteIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        ProjectManager.projectsArray[i].deleteTodo(j);
+                        displayTodayTodos();
+                    });
+                    right.appendChild(deleteIcon);
+                    todo.appendChild(right)
+
                     todoContainer.appendChild(todo);
                 }
             }
@@ -145,29 +201,56 @@ const displayThisWeekTodos = () => {
                     const todo = document.createElement('div');
                     todo.dataset.todoIndex = j;
                     todo.dataset.projectIndex = i;
+                    todo.addEventListener('click', () => {
+                        expandTodo(ProjectManager.projectsArray[i].todos[j]);
+                    });
+
+                    const left = document.createElement('div');
+                    left.setAttribute('class','left');
+
                     const button = document.createElement('button');
                     button.setAttribute('class', 'complete-button');
-                    todo.appendChild(button);
+                    button.classList.add(ProjectManager.projectsArray[i].todos[j].priority);
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        ProjectManager.projectsArray[i].deleteTodo(j);
+                        displayThisWeekTodos();
+                    });
+                    left.appendChild(button);
     
                     const todoTitle = document.createElement('p');
                     todoTitle.setAttribute('class', 'todo-title');
                     todoTitle.textContent = ProjectManager.projectsArray[i].todos[j].title + ` (${ProjectManager.projectsArray[i].title})`;
-                    todo.appendChild(todoTitle);
+                    left.appendChild(todoTitle);
+                    todo.appendChild(left);
                 
+                    const right = document.createElement('div');
+                    right.setAttribute('class','right');
                     const todoDueDate = document.createElement('p');
                     todoDueDate.setAttribute('class', 'todo-duedate');
                     todoDueDate.textContent = project.todos[i].dueDate;
-                    todo.appendChild(todoDueDate);
+                    right.appendChild(todoDueDate);
     
                     const editIcon = new Image();
                     editIcon.src = edit;
                     editIcon.setAttribute('class', 'edit-icon');
-                    todo.appendChild(editIcon);
+                    editIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        displayUpdateTaskForm(ProjectManager.projectsArray[i].todos[j]);
+                        //displayThisWeekTodos();
+                    });
+                    right.appendChild(editIcon);
     
                     const deleteIcon = new Image();
                     deleteIcon.src = trash;
                     deleteIcon.setAttribute('class', 'delete-icon');
-                    todo.appendChild(deleteIcon);
+                    deleteIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        ProjectManager.projectsArray[i].deleteTodo(j);
+                        displayThisWeekTodos();
+                    });
+                    right.appendChild(deleteIcon);
+                    todo.appendChild(right);
     
                     todoContainer.appendChild(todo);
                 }
@@ -193,31 +276,59 @@ const displayCustomProjectTodos = (project) => {
         for (let i=0; i<project.todos.length; i++) {
             const todo = document.createElement('div');
             todo.dataset.index = i;
+            const currentlyActive = document.querySelector('.active');
+            todo.addEventListener('click', () => {
+                expandTodo(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].todos[i]);
+            });
+            const left = document.createElement('div');
+            left.setAttribute('class','left');
 
             const button = document.createElement('button');
             button.setAttribute('class', 'complete-button');
-            todo.appendChild(button);
+            button.classList.add(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].todos[i].priority);
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].deleteTodo(i);
+                displayCustomProjectTodos(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)])
+            });
+            left.appendChild(button);
 
             const todoTitle = document.createElement('p');
             todoTitle.setAttribute('class', 'todo-title');
             todoTitle.textContent = project.todos[i].title;
-            todo.appendChild(todoTitle);
+            left.appendChild(todoTitle);
+            todo.appendChild(left);
             
+            const right = document.createElement('div');
+            right.setAttribute('class','right');
+
             const todoDueDate = document.createElement('p');
             todoDueDate.setAttribute('class', 'todo-duedate');
             todoDueDate.textContent = project.todos[i].dueDate;
-            todo.appendChild(todoDueDate);
+            right.appendChild(todoDueDate);
 
 
             const editIcon = new Image();
             editIcon.src = edit;
             editIcon.setAttribute('class', 'edit-icon');
-            todo.appendChild(editIcon);
+            editIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                displayUpdateTaskForm(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].todos[i]);
+                //displayCustomProjectTodos(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)]);
+            });
+            right.appendChild(editIcon);
 
             const deleteIcon = new Image();
             deleteIcon.src = trash;
             deleteIcon.setAttribute('class', 'delete-icon');
-            todo.appendChild(deleteIcon);
+            deleteIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].deleteTodo(i);
+                displayCustomProjectTodos(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)])
+            });
+
+            right.appendChild(deleteIcon);
+            todo.appendChild(right);
 
             todoContainer.appendChild(todo);
         }
@@ -234,6 +345,7 @@ const displayCustomProjectTodos = (project) => {
 
     const addTaskText = document.createElement('p');
     addTaskText.textContent = 'Add Task';
+    addTaskButton.addEventListener('click', displayNewTaskForm);
     addTaskButton.append(addTaskText);
 
     projectPreview.appendChild(addTaskButton);
@@ -246,16 +358,37 @@ const displayProjects = () => {
         for (let i=1; i<ProjectManager.projectsArray.length; i++) {
             const projectDiv = document.createElement('div');
             projectDiv.setAttribute('class', 'custom-project');
-            projectDiv.dataset.index = i;
+            projectDiv.dataset.projectIndex = i;
+            projectDiv.addEventListener('click', () => {
+                const currentlyActive = document.querySelector('.active');
+                if (currentlyActive) currentlyActive.classList.toggle('active');
+                projectDiv.classList.toggle('active');
+                displayCustomProjectTodos(ProjectManager.projectsArray[i]);
+            });
 
+            const left = document.createElement('div');
+            left.setAttribute('class','left');
             const checkListIcon = new Image();
             checkListIcon.src = checklist;
-            projectDiv.appendChild(checkListIcon);
+            left.appendChild(checkListIcon);
 
             const projectTitle = document.createElement('p');
             projectTitle.textContent = ProjectManager.projectsArray[i].title;
-            projectDiv.appendChild(projectTitle)
+            left.appendChild(projectTitle);
+            projectDiv.appendChild(left);
 
+            const deleteIcon = new Image();
+            deleteIcon.src = trash;
+            deleteIcon.setAttribute('class', 'project-delete');
+            deleteIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ProjectManager.deleteProject(i); 
+                displayProjects();
+                const projectPreview = document.querySelector('#project-preview');
+                if (!document.querySelector('.active')) clearContainer(projectPreview);                  
+            });
+
+            projectDiv.appendChild(deleteIcon);
             projectContainer.appendChild(projectDiv);
         }
     } 
@@ -265,9 +398,14 @@ const expandTodo = (todo) => {
     const body = document.querySelector('body');
     const overlay = document.createElement('div');
     overlay.setAttribute('id', 'overlay');
+    overlay.addEventListener('click', () => {
+        overlay.remove();
+    });
 
     const expandedTodo = document.createElement('form');
-
+    expandedTodo.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
     const taskName = document.createElement('div');
     const taskNameLabel = document.createElement('label');
     taskNameLabel.setAttribute('for', 'taskName');
@@ -319,7 +457,7 @@ const expandTodo = (todo) => {
     if (todo.priority == 'low') priorityInput.selectedIndex = '0';
     else if (todo.priority == 'medium') priorityInput.selectedIndex = '1';
     else priorityInput.selectedIndex = '2';
-    priorityInput.readOnly = true;
+    priorityInput.disabled = true;
     priority.appendChild(priorityInput);
     expandedTodo.appendChild(priority);
 
@@ -344,8 +482,33 @@ const displayNewTaskForm = () => {
     const body = document.querySelector('body');
     const overlay = document.createElement('div');
     overlay.setAttribute('id', 'overlay');
+    overlay.addEventListener('click', () => {
+        overlay.remove();
+    });
 
     const form = document.createElement('form');
+    form.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+
+    form.addEventListener('submit', () => {
+        overlay.remove();
+        const title = form.taskName.value;
+        const dueDate = form.dueDate.value;
+        const priority = form.priority.value;
+        const description = form.description.value;
+        const newTodo = Todo(title, description, dueDate, priority);         
+        const currentlyActive = document.querySelector('.active');
+        if (currentlyActive.id == 'inbox-project') {
+            ProjectManager.projectsArray[0].addTodo(newTodo);
+            displayInboxTodos();
+        }
+        else {
+            ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)].addTodo(newTodo);
+            displayCustomProjectTodos(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)])
+        }
+    });
+
     const title = document.createElement('h2');
     title.textContent = "New Task";
     form.appendChild(title);
@@ -412,7 +575,8 @@ const displayNewTaskForm = () => {
     form.appendChild(description);
 
     const submit = document.createElement('button');
-    submit.value = "Submit";
+    submit.setAttribute('type', 'submit');
+    submit.textContent = "Submit";
     form.appendChild(submit);
 
     overlay.appendChild(form);
@@ -420,13 +584,38 @@ const displayNewTaskForm = () => {
 }
 
 const displayUpdateTaskForm = (todo) => {
-    if (document.querySelector('#overlay')) document.querySelector('#overlay').remove();
-
+    console.log(todo);
     const body = document.querySelector('body');
     const overlay = document.createElement('div');
     overlay.setAttribute('id', 'overlay');
+    overlay.addEventListener('click', () => {
+        overlay.remove();
+    });
 
     const form = document.createElement('form');
+    form.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+    form.addEventListener('submit', () => {
+        overlay.remove();
+        const newTitle = form.taskName.value;
+        const newDueDate = form.dueDate.value;
+        const newPriority = form.priority.value;
+        const newDescription = form.description.value;
+        //todo.updateTodo(newTitle, newDescription, newDueDate, newPriority);
+        todo.title = newTitle;
+        todo.dueDate = newDueDate;
+        todo.priority = newPriority;
+        todo.description = newDescription; 
+        const currentlyActive = document.querySelector('.active');
+        if (currentlyActive.classList.contains('default-project')) {
+            if (currentlyActive.id == 'inbox-project') displayInboxTodos();
+            else if (currentlyActive.id == 'today-project') displayTodayTodos();
+            else displayThisWeekTodos();
+        }
+        else displayCustomProjectTodos(ProjectManager.projectsArray[parseInt(currentlyActive.dataset.projectIndex)]);
+    });
+
     const title = document.createElement('h2');
     title.textContent = "Update Task";
     form.appendChild(title);
@@ -496,13 +685,57 @@ const displayUpdateTaskForm = (todo) => {
     form.appendChild(description);
 
     const submit = document.createElement('button');
-    submit.value = "Update";
+    submit.setAttribute('type', 'submit');
+    submit.textContent = "Update";
     form.appendChild(submit);
     
     overlay.appendChild(form);
     body.prepend(overlay);
 }
 
+const displayNewProjectForm = () => {
+    const body = document.querySelector('body');
+    const overlay = document.createElement('div');
+    overlay.setAttribute('id', 'overlay');
+    overlay.addEventListener('click', () => {
+        overlay.remove();
+    });
 
-export default {clearContainer, displayInboxTodos, displayTodayTodos, displayThisWeekTodos, displayCustomProjectTodos, 
-    displayProjects, expandTodo, displayNewTaskForm, displayUpdateTaskForm};
+    const form = document.createElement('form');
+    form.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+    form.addEventListener('submit', () => {
+        overlay.remove();
+        const newProject = Project(form.projectName.value);
+        ProjectManager.addProject(newProject);
+        displayProjects();
+    });
+
+    const title = document.createElement('h2');
+    title.textContent = "New Project";
+    form.appendChild(title);
+
+    const projectName = document.createElement('div');
+    const projectNameLabel = document.createElement('label');
+    projectNameLabel.setAttribute('for', 'projectName');
+    projectNameLabel.textContent = "Project name:";
+    projectName.appendChild(projectNameLabel);
+    const projectNameInput = document.createElement('input');
+    projectNameInput.setAttribute('id', 'projectName');
+    projectNameInput.setAttribute('name', 'projectName');
+    projectNameInput.setAttribute('type', 'text');
+    projectNameInput.required = true;
+    projectName.appendChild(projectNameInput);
+    form.appendChild(projectName);
+
+    const submit = document.createElement('button');
+    submit.setAttribute('type', 'submit');
+    submit.textContent = "Submit";
+    form.appendChild(submit);
+    overlay.appendChild(form);
+    body.prepend(overlay);
+}
+
+export {clearContainer, displayInboxTodos, displayTodayTodos, displayThisWeekTodos, displayCustomProjectTodos, 
+    displayProjects, expandTodo, displayNewTaskForm, displayUpdateTaskForm, displayNewProjectForm};

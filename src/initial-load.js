@@ -1,8 +1,11 @@
-import working from './src/working.png';
-import today from './src/google-calendar.png';
-import week from './src/7-days.png';
-import inbox from './src/inbox.png';
-import plus from './src/plus.png';
+import working from './working.png';
+import today from './google-calendar.png';
+import week from './7-days.png';
+import ibox from './inbox.png';
+import plus from './plus.png';
+import {displayInboxTodos} from './dom-stuff'; 
+import { ProjectManager, Project} from './app-logic';
+import './styles.css';
 
 const initialLoad = () => {
     const body = document.querySelector('body');
@@ -12,6 +15,7 @@ const initialLoad = () => {
     logoBox.setAttribute('id','logo-box');
     const logo = new Image();
     logo.src = working;
+    logo.setAttribute('id','logo');
     logoBox.appendChild(logo);
     const pageTitle = document.createElement('h1');
     pageTitle.setAttribute('id', 'page-title');
@@ -20,16 +24,21 @@ const initialLoad = () => {
     header.appendChild(logoBox);
     body.appendChild(header);
 
-    const main = document.querySelector('main');
+    const main = document.createElement('main');
 
     const nav = document.createElement('nav');
     const defaultProjects = document.createElement('div');
 
+    const inbox = Project('inbox');
+    ProjectManager.addProject(inbox);
+
     const inboxProject = document.createElement('div');
     inboxProject.setAttribute('class', 'default-project');
-    inboxProject.dataset.index = 0;
+    inboxProject.classList.toggle('active');
+    inboxProject.setAttribute('id', 'inbox-project');
+    inboxProject.dataset.projectIndex = 0;
     const inboxIcon = new Image();
-    inboxIcon.src = inbox;
+    inboxIcon.src = ibox;
     inboxProject.appendChild(inboxIcon);
     const inboxText = document.createElement('p');
     inboxText.textContent = 'Inbox';
@@ -39,6 +48,7 @@ const initialLoad = () => {
 
     const todayProject = document.createElement('div');
     todayProject.setAttribute('class', 'default-project');
+    todayProject.setAttribute('id', 'today-project');
     const todayIcon = new Image();
     todayIcon.src = today;
     todayProject.appendChild(todayIcon);
@@ -49,6 +59,7 @@ const initialLoad = () => {
 
     const thisWeekProject = document.createElement('div');
     thisWeekProject.setAttribute('class', 'default-project');
+    thisWeekProject.setAttribute('id', 'this-week-project');
     const weekIcon = new Image();
     weekIcon.src = week;
     thisWeekProject.appendChild(weekIcon);
@@ -87,6 +98,7 @@ const initialLoad = () => {
     main.appendChild(projectPreview);
 
     body.appendChild(main);
+    displayInboxTodos();
 }
 
 export default initialLoad;
