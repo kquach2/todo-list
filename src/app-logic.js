@@ -1,14 +1,14 @@
 const Todo = (title, description, dueDate, priority) => {
-    const updateTodo = (newTitle, newDesc, newDate, newPriority) => {
+    /*const updateTodo = (newTitle, newDesc, newDate, newPriority) => {
         this.title = newTitle;
         this.description = newDesc;
         this.dueDate = newDate;
         if (newPriority == "high") this.priority = "high";
         else if (newPriority == "medium") this.priority = "medium";
         else this.priority = "low";
-    }
+    }*/
 
-    return {title, description, dueDate, priority, updateTodo};
+    return {title, description, dueDate, priority};
 }
 
 function Project(title) {
@@ -20,7 +20,16 @@ function Project(title) {
         todos.splice(index,1);
     }
 
-    return {todos, title, addTodo, deleteTodo};
+    const updateTodo = (index, newTitle, newDesc, newDate, newPriority) => {
+        todos[index].title = newTitle;
+        todos[index].description = newDesc;
+        todos[index].dueDate = newDate;
+        if (newPriority == "high") todos[index].priority = "high";
+        else if (newPriority == "medium") todos[index].priority = "medium";
+        else todos[index].priority = "low";
+    }
+
+    return {todos, title, addTodo, deleteTodo, updateTodo};
 }
 
 const ProjectManager = (() => {
