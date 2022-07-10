@@ -348,8 +348,6 @@ const displayCustomProjectTodos = (project) => {
 }
 
 const displayProjects = () => {
-    const previouslyActive = document.querySelector('.active'); 
-    console.log(previouslyActive);
     const projectContainer = document.querySelector('#projects-list');
     clearContainer(projectContainer);
     if (ProjectManager.projectsArray.length > 1) {
@@ -381,14 +379,22 @@ const displayProjects = () => {
             deleteIcon.addEventListener('click', (event) => {
                 event.stopPropagation();
                 ProjectManager.deleteProject(i); 
+                let previouslyActiveIndex = -1;
+                if (document.querySelector('.active')) {
+                    previouslyActiveIndex = parseInt(document.querySelector('.active').dataset.projectIndex);
+                }
                 displayProjects();
                 const projectPreview = document.querySelector('#project-preview');
+                if (previouslyActiveIndex > 0 && previouslyActiveIndex > i) {
+                    document.querySelectorAll('.custom-project')[previouslyActiveIndex-2].classList.toggle('active');
+                }
+                else if (previouslyActiveIndex > 0 && previouslyActiveIndex < i) {
+                    document.querySelectorAll('.custom-project')[previouslyActiveIndex-1].classList.toggle('active');
+                }
                 if (!document.querySelector('.active')) clearContainer(projectPreview);                  
             });
 
             projectDiv.appendChild(deleteIcon);
-            console.log(previouslyActive);
-            previouslyActive.classList.toggle('active');
             projectContainer.appendChild(projectDiv);
         }
     } 
@@ -710,7 +716,12 @@ const displayNewProjectForm = () => {
         overlay.remove();
         const newProject = Project(form.projectName.value);
         ProjectManager.addProject(newProject);
+        let previouslyActiveIndex = -1;
+        if (document.querySelector('.active')) previouslyActiveIndex = parseInt(document.querySelector('.active').dataset.projectIndex);
         displayProjects();
+        if (previouslyActiveIndex > 0) {
+            document.querySelectorAll('.custom-project')[previouslyActiveIndex-1].classList.toggle('active');
+        }
     });
 
     const title = document.createElement('h2');
