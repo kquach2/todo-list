@@ -4,10 +4,11 @@ import week from './7-days.png';
 import ibox from './inbox.png';
 import plus from './plus.png';
 import {displayInboxTodos} from './dom-stuff'; 
-import { ProjectManager, Project} from './app-logic';
+import {ProjectManager, Project, loadFromLocalStorage, } from './app-logic';
 import './styles.css';
 
 const initialLoad = () => {
+    if (JSON.parse(localStorage.getItem('projects')).length > 0) loadFromLocalStorage();
     const body = document.querySelector('body');
 
     const header = document.createElement('header');
@@ -31,7 +32,8 @@ const initialLoad = () => {
 
     const inbox = Project('inbox');
     ProjectManager.addProject(inbox);
-
+    console.log(typeof ProjectManager.projectsArray[0]);
+    console.log(JSON.stringify(ProjectManager.projectsArray[0]));
     const inboxProject = document.createElement('div');
     inboxProject.setAttribute('class', 'default-project');
     inboxProject.classList.toggle('active');

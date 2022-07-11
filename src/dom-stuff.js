@@ -1,4 +1,4 @@
-import { differenceInDays, hoursToMilliseconds, parse, startOfWeek, endOfWeek } from "date-fns";
+import {differenceInDays, startOfWeek, endOfWeek} from "date-fns";
 import edit from './edit.png';
 import trash from './trash.png';
 import plus from './plus.png';
@@ -350,6 +350,7 @@ const displayCustomProjectTodos = (project) => {
 const displayProjects = () => {
     const projectContainer = document.querySelector('#projects-list');
     clearContainer(projectContainer);
+    console.log(ProjectManager.projectsArray);
     if (ProjectManager.projectsArray.length > 1) {
         for (let i=1; i<ProjectManager.projectsArray.length; i++) {
             const projectDiv = document.createElement('div');
