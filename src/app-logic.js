@@ -33,6 +33,7 @@ const ProjectManager = (() => {
 
     const addProject = (project) => {
         projectsArray.push(project); 
+        console.log(projectsArray);
         saveToLocalStorage();
     }
 
@@ -47,38 +48,27 @@ const ProjectManager = (() => {
 
 const saveToLocalStorage = () => {
     localStorage.setItem('projects', JSON.stringify(ProjectManager.projectsArray));
+    console.log(localStorage.getItem('projects'));
+    console.log(JSON.parse(localStorage.getItem('projects')));
 }
 
 const loadFromLocalStorage = () => {
+    console.log('Project Manager Array:' + ProjectManager.projectsArray);
     const projects = JSON.parse(localStorage.getItem('projects'));
-    const addTodo = (todo) => {
-        todos.push(todo); 
-        saveToLocalStorage();
-    }
+    //let newProjectsArray = [];
 
-    const deleteTodo = (index) => {
-        todos.splice(index,1);
-        saveToLocalStorage();
-    }
-
-    const updateTodo = (index, newTitle, newDesc, newDate, newPriority) => {
-        todos[index].title = newTitle;
-        todos[index].description = newDesc;
-        todos[index].dueDate = newDate;
-        if (newPriority == "high") todos[index].priority = "high";
-        else if (newPriority == "medium") todos[index].priority = "medium";
-        else todos[index].priority = "low";
-        saveToLocalStorage();
-    }
-
-    console.log(projects);
-    console.log(ProjectManager.projectsArray);
     for (let i=0; i < projects.length; i++) {
-        projects[i].addTodo = addTodo;
-        projects[i].deleteTodo = deleteTodo;
-        projects[i].updateTodo = updateTodo;
+        // projects[i] is a generic object, need to turn it into a Project
+        /*let newProject = Project(projects[i].title);
+        newProject.todos = projects[i].todos;
+        newProjectsArray.push(newProject);*/
+        const project = Project(projects[i].title);
+        for (let j=0; j < projects[i].todos.length; j++) {
+            project.addTodo(projects[i].todos[j]);
+        }
+        ProjectManager.addProject(project);
     }
-    ProjectManager.projectsArray = projects;
+    //ProjectManager.projectsArray = newProjectsArray;
 }
 
 export {Todo, Project, ProjectManager, loadFromLocalStorage};

@@ -23,7 +23,7 @@ html, body {
 main {
     background-color: #eee;
     display: flex;
-    height: 100%;
+    height: calc(100% - 104px);
 }
 
 nav {

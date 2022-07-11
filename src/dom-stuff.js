@@ -350,7 +350,6 @@ const displayCustomProjectTodos = (project) => {
 const displayProjects = () => {
     const projectContainer = document.querySelector('#projects-list');
     clearContainer(projectContainer);
-    console.log(ProjectManager.projectsArray);
     if (ProjectManager.projectsArray.length > 1) {
         for (let i=1; i<ProjectManager.projectsArray.length; i++) {
             const projectDiv = document.createElement('div');
