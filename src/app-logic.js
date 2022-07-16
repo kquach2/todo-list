@@ -1,22 +1,34 @@
-const saveToLocalStorage = () => {
-  localStorage.setItem('projects', JSON.stringify(ProjectManager.projectsArray));
+const saveToLocalStorage = (arr) => {
+  localStorage.setItem('projects', JSON.stringify(arr));
 };
 
-const Todo = (title, description, dueDate, priority) => ({
-  title, description, dueDate, priority,
-});
+const ProjectManager = (() => {
+  const projectsArray = [];
+
+  const addProject = (project) => {
+    projectsArray.push(project);
+    saveToLocalStorage(ProjectManager.projectsArray);
+  };
+
+  const deleteProject = (index) => {
+    projectsArray.splice(index, 1);
+    saveToLocalStorage(ProjectManager.projectsArray);
+  };
+
+  return { projectsArray, addProject, deleteProject };
+})();
 
 function Project(title) {
   const todos = [];
 
   const addTodo = (todo) => {
     todos.push(todo);
-    saveToLocalStorage();
+    saveToLocalStorage(ProjectManager.projectsArray);
   };
 
   const deleteTodo = (index) => {
     todos.splice(index, 1);
-    saveToLocalStorage();
+    saveToLocalStorage(ProjectManager.projectsArray);
   };
 
   const updateTodo = (index, newTitle, newDesc, newDate, newPriority) => {
@@ -26,7 +38,7 @@ function Project(title) {
     if (newPriority === 'high') todos[index].priority = 'high';
     else if (newPriority === 'medium') todos[index].priority = 'medium';
     else todos[index].priority = 'low';
-    saveToLocalStorage();
+    saveToLocalStorage(ProjectManager.projectsArray);
   };
 
   return {
@@ -34,21 +46,9 @@ function Project(title) {
   };
 }
 
-const ProjectManager = (() => {
-  const projectsArray = [];
-
-  const addProject = (project) => {
-    projectsArray.push(project);
-    saveToLocalStorage();
-  };
-
-  const deleteProject = (index) => {
-    projectsArray.splice(index, 1);
-    saveToLocalStorage();
-  };
-
-  return { projectsArray, addProject, deleteProject };
-})();
+const Todo = (title, description, dueDate, priority) => ({
+  title, description, dueDate, priority,
+});
 
 const loadFromLocalStorage = () => {
   const projects = JSON.parse(localStorage.getItem('projects'));
