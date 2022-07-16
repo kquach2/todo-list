@@ -1,5 +1,5 @@
 const saveToLocalStorage = (arr) => {
-  localStorage.setItem('projects', JSON.stringify(arr));
+  localStorage.setItem("projects", JSON.stringify(arr));
 };
 
 const ProjectManager = (() => {
@@ -35,23 +35,30 @@ function Project(title) {
     todos[index].title = newTitle;
     todos[index].description = newDesc;
     todos[index].dueDate = newDate;
-    if (newPriority === 'high') todos[index].priority = 'high';
-    else if (newPriority === 'medium') todos[index].priority = 'medium';
-    else todos[index].priority = 'low';
+    if (newPriority === "high") todos[index].priority = "high";
+    else if (newPriority === "medium") todos[index].priority = "medium";
+    else todos[index].priority = "low";
     saveToLocalStorage(ProjectManager.projectsArray);
   };
 
   return {
-    todos, title, addTodo, deleteTodo, updateTodo,
+    todos,
+    title,
+    addTodo,
+    deleteTodo,
+    updateTodo,
   };
 }
 
 const Todo = (title, description, dueDate, priority) => ({
-  title, description, dueDate, priority,
+  title,
+  description,
+  dueDate,
+  priority,
 });
 
 const loadFromLocalStorage = () => {
-  const projects = JSON.parse(localStorage.getItem('projects'));
+  const projects = JSON.parse(localStorage.getItem("projects"));
 
   for (let i = 0; i < projects.length; i += 1) {
     const project = Project(projects[i].title);
@@ -62,6 +69,4 @@ const loadFromLocalStorage = () => {
   }
 };
 
-export {
-  Todo, Project, ProjectManager, loadFromLocalStorage,
-};
+export { Todo, Project, ProjectManager, loadFromLocalStorage };
